@@ -1,7 +1,7 @@
 " File : PopupBuffer.vim
 " Last Change: 2001 Nov 13
 " Maintainer: Gontran BAERTS <gbcreation@free.fr>
-" Version : 1.1
+" Version : 1.1.1
 "
 " Please don't hesitate to correct my english :)
 " Send corrections to gbcreation@free.fr
@@ -15,6 +15,9 @@
 " using :source PopupBuffer.vim
 "
 "-----------------------------------------------------------------------------
+" Updates in version 1.1.1
+" - Fix stupid bug in PBAdd() function. Directories were added to popup buffers
+"   menu and never removed.
 " Updates in version 1.1
 " - Allow to control the menu item format with popupBufferPattern global
 "   variable. Use %F for full file path, %f for file name, %p for file path,
@@ -41,17 +44,17 @@ endif
 
 " Add new buffer to popup menu
 function! <SID>PBAdd( fname, bnum )
-	exe "amenu PopUp.Buffers." . <SID>PBFormat( a:fname, a:bnum ) . " :b " . a:bnum . "<CR>"
+	if !isdirectory(a:fname)
+		exe "amenu PopUp.Buffers." . <SID>PBFormat( a:fname, a:bnum ) . " :b " . a:bnum . "<CR>"
+	endif
 endfunc
 
 " Remove deleted buffer from popup menu
 func! <SID>PBRemove()
 	let name = expand("<afile>")
-	if isdirectory(name)
-		return
+	if !isdirectory(name)
+		exe "aunmenu PopUp.Buffers." . <SID>PBFormat(  name, expand("<abuf>") )
 	endif
-
-	exe "silent! aunmenu PopUp.Buffers." . <SID>PBFormat(  name, expand("<abuf>") )
 endfunc
 
 " Format menu entry
@@ -79,7 +82,7 @@ function! <SID>PBShow()
 	" Add current buffers
 	let buf = 1
 	while buf <= bufnr('$')
-		if bufexists(buf) && !isdirectory(bufname(buf)) && !getbufvar(buf, "&bufsecret")
+		if bufexists(buf) && !getbufvar(buf, "&bufsecret")
 			call <SID>PBAdd( bufname(buf), buf )
 		endif
 		let buf = buf + 1
