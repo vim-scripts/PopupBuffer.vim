@@ -1,0 +1,3 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=132
+
+This script is an adaptation of the default list buffer menu from menu.vim file. With mousefocus on and horizontally splited windows, it's very difficult to select an other buffer for the bottom window from the Buffer menu :). With the PopupBuffer script, right-click on the bottom window and select an other buffer from the Buffers submenu.
